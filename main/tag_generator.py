@@ -59,33 +59,46 @@ def GenetateTags():
 
     try:
         parsedarray = config[sectionname][redirecttagname]
-        splitstrings = parsedarray.split('\n')
-        for newstring in splitstrings:
-            redirecttaglist.append(newstring)
+        #splitstrings = parsedarray.split('\n')
+        #splitstrings = parsedarray
+        #for newstring in splitstrings:
+        #    redirecttaglist.append(newstring)
+        while(1):
+            parsedarray = parse("{}NewTagName=\"{}\"{}", parsedarray)
+            if parsedarray:
+                print(parsedarray[1])
+                taglist.append(parsedarray[1])
+                parsedarray = parsedarray[2]
+                print(parsedarray)
+            else:
+                break
     except:
         text.insert("current" ,"Warnning : "+redirecttagname + " NotFound.\n")
 
     text.insert("current" ,"Done\n")
 
-    # 기존 ini중에 제외할 태그를 선별한다.
-    text.insert("current" ,"Exclusion list processing.\n")
-    excludlist_str = inputbox.get("1.0",tkinter.END).strip("\n")
-    if excludlist_str:
-        excludlist = excludlist_str.split(" ")
-        excludlist.append("\"")
-        str_match = list()
-        #text.insert("current" , str(taglist) + "\n")
-        for excludtag in excludlist:
-            str_match = [i for i in range(len(taglist)) if excludtag in taglist[i]]
-            text.insert("current" , excludtag + "\n")
-            if str_match:
-                str_match.reverse()
-                for index in str_match:
-                    taglist.pop(index)
-                text.insert("current" , "Removed :" + str(len(str_match)) + "\n")
-            else:
-                text.insert("current" , "Not Found.\n")
-        #text.insert("current" , taglist + "\n")
+    ## 기존 ini중에 제외할 태그를 선별한다.
+    #text.insert("current" ,"Exclusion list processing.\n")
+    #excludlist_str = inputbox.get("1.0",tkinter.END).strip("\n")
+    #if excludlist_str:
+    #    excludlist = excludlist_str.split(" ")
+    #    excludlist.append("\"")
+    #    excludlist.append("TagName")
+    #    excludlist.append("\(")
+    #    excludlist.append("\)")
+    #    str_match = list()
+    #    #text.insert("current" , str(taglist) + "\n")
+    #    for excludtag in excludlist:
+    #        str_match = [i for i in range(len(taglist)) if excludtag in taglist[i]]
+    #        text.insert("current" , excludtag + "\n")
+    #        if str_match:
+    #            str_match.reverse()
+    #            for index in str_match:
+    #                taglist.pop(index)
+    #            text.insert("current" , "Removed :" + str(len(str_match)) + "\n")
+    #        else:
+    #            text.insert("current" , "Not Found.\n")
+    #    #text.insert("current" , taglist + "\n")
 
     # 모든 csv에 태그값 1번째 라인을 읽고 '.'이 있는 항목만 taglist에 저장
     text.insert("current" ,"Read csv Files\n")
@@ -122,6 +135,30 @@ def GenetateTags():
     taglist.sort()
     text.insert("current" ,"Done\n")
 
+    # 기존 ini중에 제외할 태그를 선별한다.
+    text.insert("current" ,"Exclusion list processing.\n")
+    excludlist_str = inputbox.get("1.0",tkinter.END).strip("\n")
+    excludlist=list()
+    if excludlist_str:
+        excludlist = excludlist_str.split(" ")
+    excludlist.append("\"")
+    excludlist.append("TagName")
+    excludlist.append("\(")
+    excludlist.append("\)")
+    str_match = list()
+    #text.insert("current" , str(taglist) + "\n")
+    for excludtag in excludlist:
+        str_match = [i for i in range(len(taglist)) if excludtag in taglist[i]]
+        text.insert("current" , excludtag + "\n")
+        if str_match:
+            str_match.reverse()
+            for index in str_match:
+                taglist.pop(index)
+            text.insert("current" , "Removed :" + str(len(str_match)) + "\n")
+        else:
+            text.insert("current" , "Not Included.\n")
+    #text.insert("current" , taglist + "\n")
+
     # ini 파일 수정 후 저장.
     text.insert("current" ,"Edit "+targetini+"\n")
     os.chmod( config_directorypath + targetini, stat.S_IWRITE )
@@ -132,9 +169,9 @@ def GenetateTags():
     config.remove_option(sectionname, tagname)
     config.write(fs)
 
-    for tag in redirecttaglist:
-        if tag != None:
-            fs.write(redirecttagname+"="+tag+"\n")
+    #for tag in redirecttaglist:
+    #    if tag != None:
+    #        fs.write(redirecttagname+"="+tag+"\n")
 
     for tag in taglist:
         if tag != None:
@@ -156,7 +193,7 @@ text.pack(side="top", fill="both", expand=True)
 frame=tkinter.Frame(width=100, height=1, relief="solid", bd=1)
 frame.pack(fill="both")
 
-message01=tkinter.Message(frame, text="ex) Damage.Bernhard Character.PlayerCharacter ...", width=500)
+message01=tkinter.Message(frame, text="ex) Damage Character.PlayerCharacter ...", width=500)
 message01.pack(side="bottom")
 
 message02=tkinter.Message(frame, text="Exclusion list :", width=100)
